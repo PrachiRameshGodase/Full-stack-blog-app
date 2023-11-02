@@ -69,7 +69,8 @@ async function showUserOnScreen() {
       const comment = document.createElement("input");
       comment.className = "border p-2 my-2 rounded";
       comment.type = "text";
-      comment.id = "comment1";
+      console.log(`comment-${blog.id}`)
+      comment.id = `comment-${blog.id}`;
 
       const sendButton = document.createElement("button");
       sendButton.className =
@@ -77,6 +78,11 @@ async function showUserOnScreen() {
       sendButton.innerText = "Send";
       sendButton.id="send"
       sendButton.type = "submit";
+
+      const ul = document.createElement('ul'); // Create ul element
+      ul.id = `commentlist-${blog.id}`;
+      console.log(`commentlist-${blog.id}`)
+      // ul.innerHTML='node'
 
       subcontainer.appendChild(comment);
       subcontainer.appendChild(sendButton);
@@ -105,23 +111,77 @@ async function showUserOnScreen() {
       // li.appendChild(sendButton);
       li.appendChild(subcontainer);
       li.appendChild(minimizeButton);
+      li.appendChild(ul)
 
-      const form2 = document.getElementById("comment1");
+      
    
       sendButton.addEventListener("click", async (e) => {//send button has been taken inplace of form2 cause we are using send button and the attribute of addlisten event should be click because this is not a form this is button so when click happens then this anonymous fn would be call
         e.preventDefault();
 
-        const comment1 = document.getElementById("comment1").value;
+        const comment1 = document.getElementById(`comment-${blog.id}`).value;
 
         const obj2 = {
           comment1: comment1,
+          blogId:blog.id
         };
-        console.log(obj2);
+        // console.log(obj2);
         const response = await axios.post(
           "http://localhost:3000/comment",obj2
         );
+          const commentscreen=response.data.newComment
+          console.log(commentscreen)
+          showCommentonscreen(blog.id)
+         
+        
       });
+
+//get the previous comments
+async function showCommentonscreen(blogId) {
+  const response = await axios.get(`http://localhost:3000/previous-comments/${blogId}`);
+  const comments = response.data.comments;
+
+  const commentlist = document.getElementById(`commentlist-${blogId}`);
+  commentlist.innerHTML = '';
+
+  for (let i = 0; i < comments.length; i++) {
+    const comment = comments[i];
+    const li = document.createElement('li');
+    li.id = `${blogId}`;
+    li.textContent = comment.comment;
+
+    const hr=document.createElement('hr')
+    hr.className='border-t-2 border-yellow-400 my-2';
+
+
+    //create deletebutton
+    const deletecomment=document.createElement('button')
+    deletecomment.id='button3'
+    deletecomment.className='text-red-700 hover:text-red-500 ml-96'
+    deletecomment.innerText='Delete'
+    deletecomment.onclick=async()=>{
+      const responsed=await axios.delete(`http://localhost:3000/comments/${comment.id}`)
+      console.log(responsed)
+      commentlist.removeChild(li)
+    }
+
+
+li.appendChild(deletecomment)
+    li.appendChild(hr)
+    commentlist.appendChild(li);
+  }
+   // Clear the comment field
+   clearfiled(blogId);
+}
+function clearfiled(blogId) {
+  document.getElementById(`comment-${blogId}`).value = ''; // Use blogId here to clear the specific comment field
+}
+
+      showCommentonscreen(blog.id)
     });
+
+    
+    
+  
 
     // content.appendChild(deleteButton);
 
@@ -132,8 +192,14 @@ async function showUserOnScreen() {
 
     itemList.appendChild(li);
   }
+ 
 }
+
+
+
 
 document.addEventListener("DOMContentLoaded", async () => {
   showUserOnScreen();
+  
 });
+

@@ -35,7 +35,7 @@ exports.postBlog=async(req,res,next)=>{
         title:title,
         author:author,
         content:content,
-        // userId:req.user.id
+      
     })
     // const allblogs=await blog.create({
     //     title:title,
