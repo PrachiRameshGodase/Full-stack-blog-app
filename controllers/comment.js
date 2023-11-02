@@ -1,15 +1,17 @@
 const path=require('path')
 
-const comment=require("../models/comment")
+const commentTable=require("../models/comment")
 
 
 exports.postComment=async(req,res,next)=>{
+    console.log("i am executtinggggggggggggg")
     try{
-        const comment = req.body.comment;
+        const comment = req.body.comment1;
 
-        console.log(req.body)
-        const newComment = await Comment.create({
-            blogId: req.blog.id,
+        console.log(comment)
+    
+        const newComment = await commentTable.create({
+            // blogId: req.blog.blogid,// there is no blog id in blog check it once then and pass some data to blog id then try to save in table
             comment: comment
         });
         console.log('comment')
